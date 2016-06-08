@@ -19,6 +19,7 @@
     "url": "https://github.com/vadim-sky/restman/issues"
   },
   "homepage": "https://github.com/vadim-sky/restman#readme",
+
   "dependencies": {
     "assert": "^1.4.0",
     "bcrypt": "^0.8.6",
