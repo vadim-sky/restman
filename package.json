@@ -22,17 +22,26 @@
   "dependencies": {
     "assert": "^1.4.0",
     "bcrypt": "^0.8.6",
-    "body-parser": "^1.15.0",
+    "body-parser": "^1.15.1",
+    "cookie-parser": "^1.4.3",
+    "csurf": "^1.9.0",
     "express": "^4.13.4",
     "express-jwt-auth": "0.0.6",
+    "http": "0.0.0",
     "jsonwebtoken": "^5.7.0",
     "jwt-simple": "^0.5.0",
     "lodash": "^4.11.2",
     "mongodb": "^2.1.17",
     "mongoose": "^4.4.13",
+    "morgan": "^1.7.0",
+    "nconf": "^0.8.4",
     "passport": "^0.3.2",
     "passport-jwt": "^2.0.0",
-    "passport-strategy": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "passport-strategy": "^1.0.0",
+    "path": "^0.12.7",
+    "serve-favicon": "^2.3.0",
+    "winston": "^2.2.0"
   },
   "devDependencies": {
     "graceful-fs": "^4.1.4",
@@ -54,5 +63,4 @@
     "jshint-stylish": "^2.2.0",
     "mocha": "^2.5.3"
   }
-
 }
