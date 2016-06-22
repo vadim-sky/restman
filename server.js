@@ -2,59 +2,59 @@
  * Created by vadimsky on 10/06/16.
  */
 const express = require('express');
-const config  = require('config');
-const http  = require('http');
+const config  = require('./config');
+
 const path = require('path');
-const csrf = require('csurf');
-const log = require('lib/logger')(module);
+const log = require('./lib/logger')(module);
+
 const favicon = require('serve-favicon');
 const bodyParser = require('body-parser');
+const routes = require('./app/routes');
 
 
-// create express app
+const expressJwt = require('express-jwt');
+const jwt = require('jsonwebtoken');
+
+
+
+// var passport = require('passport');
+// var morgan      = require('morgan');
+// var Strategy = require('passport-local');
+// var jwt         = require('jwt-simple');
+
+
 const app = express();
-app.set('port', config.get('port'));
-app.use( favicon( path.join(__dirname, config.get('favicon'))));
+app.listen(config.get('port'), () => {
+    log.info('Express server listening on port:', config.get('port'));
+});
+
+
+/**
+ * Middleware
+ */
+app.use(favicon( path.join(__dirname, config.get('favicon'))));
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
-app.use(bodyParser.json());
+//app.use(bodyParser.json());
+
+// parse various different custom JSON types as JSON
+app.use(bodyParser.json({ type: 'application/*+json' }));
+
+// We are going to protect /api routes with JWT
+//app.use(expressJwt({secret: config.get('secret')}).unless({path: ['/auth']}));
 
 
-// const passport = require('passport');
-// const morgan      = require('morgan');
-//
-// const Strategy = require('passport-local');
-//
-// let jwt         = require('jwt-simple');
-const cookieParser = require('cookie-parser')(config.get('secret'));
-app.use(cookieParser);
-
-//
-var csrfProtection = csrf({ cookie: true });
-app.use(csrfProtection);
-var parseForm = bodyParser.urlencoded({ extended: false });
-//
-app.get('/', csrfProtection, function(req, res) {
-    // pass the csrfToken to the view
-    res.json({ csrfToken: req.csrfToken(), message: 'hello!'});
-});
+/**
+ * Routes
+ */
+app.use(routes);
 
 
-app.get('/test', csrfProtection, function(req, res) {
-    // pass the csrfToken to the view
-    res.json({ csrfToken: req.csrfToken(), message: 'Test!'});
-});
-
-//
-// app.get('/form', csrfProtection, function(req, res) {
-//     // pass the csrfToken to the view
-//     res.render('send', { csrfToken: req.csrfToken() });
-// });
-//
-// app.post('/process', parseForm, csrfProtection, function(req, res) {
-//     res.send('data is being processed');
-// });
-
-app.listen(config.get('port'), function(){
-    log.info('Express server listening on port:', config.get('port'));
+app.use(function (err, req, res, next) {
+    if (err.name === 'UnauthorizedError') {
+        res.status(401).send('invalid token...');
+    }
 });

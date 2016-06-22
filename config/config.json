@@ -1,5 +1,17 @@
 {
-    "port" : 8000,
-    "favicon" : "favicon.ico",
-    "secret" : "my super secret!"
+    "port": 8000,
+    "favicon": "favicon.ico",
+    "secret": "my super secret!",
+    "development": {
+        "mongoose": {
+            "uri" : "mongodb://localhost/test",
+            "options": {
+                "server": {
+                  "socketOptions": {
+                    "keepAlive": 1
+                  }
+                }
+            }
+        }
+    }
 }
