@@ -42,17 +42,14 @@ var userSchema = new Schema({
 
 
 userSchema.methods.encryptPassword =  function (password) {
-    console.log('encrypt');
-    var salt = crypto.randomBytes(16).toString('hex');
-    //this.hashedPassword = crypto.pbkdf2Sync(password, this.salt, 100000, 512, 'sha512');
-    return crypto.pbkdf2Sync(password, salt, 100000, 512, 'sha512');
+    this.salt = crypto.randomBytes(16).toString('hex');
+    return crypto.pbkdf2Sync(password, this.salt, 100000, 512, 'sha512');
 };
 
 userSchema.virtual('password')
     .get( () => this._plainPassword )
     .set = (password) =>  {
         this._plainPassword = password;
-        this.salt = crypto.randomBytes(16).toString('hex');
         this.hashedPassword =  this.encryptPassword(password);
     };
 
@@ -62,16 +59,8 @@ userSchema.methods.checkPassword = () => (password) => {
     return this.hashedPassword === this.encryptPassword(password);
 };
 
-
-
 module.exports = mongoose.model('User', userSchema);
 
-///
-// userSchema.methods.setPassword = (password) => {
-//     this.salt = crypto.randomBytes(16).toString('hex');
-//     this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64).toString('hex');
-// };
-//
 // userSchema.methods.generateJwt = function() {
 //     var expiry = new Date();
 //     expiry.setDate(expiry.getDate() + 7);
