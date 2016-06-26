@@ -1,15 +1,49 @@
 /**
  * Created by vadimsky on 20/06/16.
  */
+const mongoose = require('../../../lib/mongoose');
 var User  = require('./user');
 var _ = require("lodash");
-//import  User from "./user";
+const async = require('async');
+const jwt = require('jsonwebtoken');
 
-var user  = new User({
-    username: 'vasya112a44',
-    email: "vasya@pup.coma1155",
-    password: "a155234a56"
+// 1. drop tests database
+// 2. append user
+// 3. close connection;
+
+
+mongoose.connection.on('open', function () {
+    var db = mongoose.connection.db;
+    db.dropDatabase((err) => {
+        if (err) {
+            throw err;
+        }
+        console.log("database was dropped... ");
+
+
+
+
+
+        mongoose.disconnect();
+    })
 });
+
+
+
+// var user  = new User({
+//     username: 'stepan',
+//     email: "stepan@baraban.net",
+//     password: "secret"
+// });
+
+// user.save((err, user, affected) => {
+//     if (err) {
+//         console.log("save failed", err);
+//         //throw err;
+//     }
+//     console.log(user);
+//
+// });
 
 User.find({}, function (err, users) {
     if(err) {
@@ -20,23 +54,18 @@ User.find({}, function (err, users) {
     _.forEach(users, (user) => console.log(JSON.stringify(user)));
 });
 
-// user.save((err, user, affected) => {
-//     if (err) {
-//        throw err;
-//     }
-//     console.log(user);
-//
-// });
 
-User.findOne({"username": "vasya"}, function (err, user) {
+
+User.findOne({"username": "stepan"}, function (err, user) {
     if(err) {
         /*error!!!*/
         console.log(err);
         return;
     }
+    if (!user) return;
     console.log(user);
-    if (user.checkPassword("123456")) {
-        console.log("Hurrra!!!");
+    if (user.checkPassword("secret")) {
+        console.log("Hurrra!!!", user.getUserProfile());
     }
 
 });

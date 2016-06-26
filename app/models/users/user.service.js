@@ -9,7 +9,7 @@ var User = require("./user");
  *
  * @return user or undefined
  */
-function login(userName, password) {
+function authen(userName, password) {
     return undefined;
 }
 

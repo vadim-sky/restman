@@ -1,14 +1,11 @@
 /**
  * Created by vadimsky on 17/06/16.
  */
-var mongoose = require('../../../lib/mongoose'),
-    Schema = mongoose.Schema;
+var mongoose = require('../../../lib/mongoose'), Schema = mongoose.Schema;
 const config = require('../../../config');
 const crypto = require('crypto');
 
-
-
-var userSchema = new Schema({
+var schema = new Schema({
     username: {
         type: String,
         unique: true,
@@ -26,6 +23,10 @@ var userSchema = new Schema({
         type:String,
         required: true
     },
+    salt: {
+        type:String,
+        required: true
+    } ,
     email: {
         type: String,
         unique: true,
@@ -33,33 +34,41 @@ var userSchema = new Schema({
     },
     roles: [String],
     providers: [String],
-    salt: String,
     created: {
         type: Date,
         default: Date.now
     }
 });
 
-
-userSchema.methods.encryptPassword =  function (password) {
+schema.methods.encryptPassword = function (password) {
     this.salt = crypto.randomBytes(16).toString('hex');
     return crypto.pbkdf2Sync(password, this.salt, 100000, 512, 'sha512');
+
 };
 
-userSchema.virtual('password')
-    .get( () => this._plainPassword )
-    .set = (password) =>  {
+schema.virtual('password')
+    .get( ()=>  this._plainPassword )
+    .set ( function (password) {
         this._plainPassword = password;
         this.hashedPassword =  this.encryptPassword(password);
-    };
+    });
+
+schema.methods.getUserProfile = function() {
+    return {
+        id: this.id,
+        username: this.username,
+        email: this.email,
+        roles: this.roles
+    }
+};
 
 
-userSchema.methods.checkPassword = () => (password) => {
+schema.methods.checkPassword = () => (password) => {
     console.log('valid password', this);
     return this.hashedPassword === this.encryptPassword(password);
 };
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('User', schema);
 
 // userSchema.methods.generateJwt = function() {
 //     var expiry = new Date();
